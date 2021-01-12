@@ -39,5 +39,3 @@ venv
 app.db
 microblog.log*
 
-# Pycharm IDE
-.idea_skip
