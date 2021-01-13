@@ -3,6 +3,7 @@ from flask import render_template, flash, redirect, session, url_for
 from app import app, db
 from app.forms import LoginForm
 from app.models import User
+from app.mail import send_email
 
 
 @app.route('/')
@@ -33,6 +34,8 @@ def login():
             user = User(username=form.username.data)
             db.session.add(user)
             db.session.commit()
+            send_email('thanhnt2195@gmail.com', 'New User', # send mail to admin to notify about new user
+                       'mail/new_user', user=user)
             session['known'] = False
         else:
             session['known'] = True

@@ -12,5 +12,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 
+# config email service
+
 from app import routes
 
