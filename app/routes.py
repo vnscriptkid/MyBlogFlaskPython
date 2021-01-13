@@ -1,7 +1,8 @@
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, session, url_for
 
-from app import app
+from app import app, db
 from app.forms import LoginForm
+from app.models import User
 
 
 @app.route('/')
@@ -27,8 +28,21 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(form.username.data, form.remember_me.data))
-        return redirect('/index')
-    return render_template('login.html', title='Sign In', form=form)
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None:
+            user = User(username=form.username.data)
+            db.session.add(user)
+            db.session.commit()
+            session['known'] = False
+        else:
+            session['known'] = True
+            form.username.data = ''
+        session['username'] = form.username.data
+        return redirect(url_for('login'))
+    return render_template('login.html',
+                           title='Sign In',
+                           form=form,
+                           username=session.get('username'),
+                           known=session.get('known'))
 
 

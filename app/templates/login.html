@@ -2,6 +2,13 @@
 
 {% block content %}
     <h1>Sign In</h1>
+
+    {% if known == False  %}
+        <p>New user has been created.</p>
+    {% else %}
+        <p>Welcome back</p>
+    {% endif %}
+
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <!--Username-->
