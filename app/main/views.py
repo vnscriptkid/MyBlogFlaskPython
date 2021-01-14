@@ -1,13 +1,15 @@
-from flask import render_template, flash, redirect, session, url_for
+from flask import render_template, redirect, session, url_for
+from datetime import datetime
 
-from app import app, db
-from app.forms import LoginForm
+from app.main.forms import LoginForm
+from app.main import main
 from app.models import User
-from app.mail import send_email
+from app.email import send_email
+from app import db
 
 
-@app.route('/')
-@app.route('/index')
+@main.route('/')
+@main.route('/index')
 def index():
     user = {'username': 'thanh'}
 
@@ -22,10 +24,16 @@ def index():
         }
     ]
 
-    return render_template('index.html', title='Home', user=user, posts=posts)
+    return render_template(
+        'index.html',
+        title='Home',
+        user=user,
+        posts=posts,
+        current_time=datetime.utcnow()
+    )
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
