@@ -40,3 +40,7 @@ app.db
 
 # Pycharm IDE
 .idea
+
+# Database file
+data-dev.sqlite
+data.sqlite
