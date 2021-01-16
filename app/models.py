@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime
 
 from flask import current_app
@@ -26,6 +27,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
+    avatar_hash = db.Column(db.String(32))  # TODO: recalculate when email changes
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -34,6 +36,17 @@ class User(db.Model, UserMixin):
                 self.role = Role.query.filter_by(name='Administrator').first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = self.gravatar_hash()
+
+    def gravatar_hash(self):
+        return hashlib.md5(self.email.lower().encode('utf8')).hexdigest()
+
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        url = 'https://secure.gravatar.com/avatar'
+        hash = hashlib.md5(self.email.lower().encode('utf8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url, hash=hash, size=size, default=default,
+                                                                     rating=rating)
 
     @property
     def password(self):
