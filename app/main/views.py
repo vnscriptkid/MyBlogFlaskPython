@@ -1,37 +1,31 @@
 from flask import render_template, redirect, url_for, flash
-from datetime import datetime
 
 from flask_login import login_required, current_user
 
 from app import db
 from app.decorators import admin_required, permission_required
 from app.main import main
-from app.main.forms import EditProfileForm, EditProfileAdminForm
-from app.models import Permission, User, Role
+from app.main.forms import EditProfileForm, EditProfileAdminForm, PostForm
+from app.models import Permission, User, Role, Post
 
 
 @main.route('/')
-@main.route('/index')
+@main.route('/index', methods=['GET', 'POST'])
 def index():
-    user = {'username': 'thanh'}
+    form = PostForm()
 
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        post = Post(body=form.body.data, author=current_user._get_current_object())
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('.index'))
+
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
 
     return render_template(
         'index.html',
-        title='Home',
-        user=user,
         posts=posts,
-        current_time=datetime.utcnow()
+        form=form
     )
 
 
