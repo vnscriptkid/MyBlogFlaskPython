@@ -14,3 +14,9 @@
     {% include '_posts.html' %}
     {{ macros.pagination_widget(pagination, '.index') }}
 {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ pagedown.include_pagedown() }}
+{% endblock %}
+
