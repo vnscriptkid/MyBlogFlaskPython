@@ -5,8 +5,8 @@ from flask_login import login_required, current_user
 from app import db
 from app.decorators import admin_required, permission_required
 from app.main import main
-from app.main.forms import EditProfileForm, EditProfileAdminForm, PostForm
-from app.models import Permission, User, Role, Post
+from app.main.forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
+from app.models import Permission, User, Role, Post, Comment
 
 
 @main.route('/')
@@ -101,10 +101,32 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=user)
 
 
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', posts=[post])
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        db.session.commit()
+        flash('Your comment has been published.')
+        return redirect(url_for('.post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+
+    per_page = current_app.config['FLASKY_COMMENTS_PER_PAGE']
+
+    if page == -1:
+        page = (post.comments.count() - 1) // per_page + 1
+
+    pagination = post.comments.order_by(Comment.timestamp.asc()) \
+        .paginate(page, per_page=per_page, error_out=False)
+
+    comments = pagination.items
+
+    return render_template('post.html', posts=[post], form=form, comments=comments, pagination=pagination)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -204,6 +226,16 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)  # 30 days
     return resp
+
+
+@main.route('/moderate/enable')
+def moderate_enable():
+    pass
+
+
+@main.route('/moderate/disable')
+def moderate_disable():
+    pass
 
 
 @main.route('/admin')
