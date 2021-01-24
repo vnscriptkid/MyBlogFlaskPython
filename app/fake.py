@@ -5,14 +5,15 @@ from . import db
 from .models import User, Post, Follow, Role, Comment
 
 
-def _insert_user(email, username, password, confirmed=True, name="", location="", about_me=""):
+def _insert_user(email, username, password, confirmed=True, name="", location="", about_me="", role_id=1):
     u = User(email=email,
              username=username,
              password=password,
              confirmed=confirmed,
              name=name,
              location=location,
-             about_me=about_me)
+             about_me=about_me,
+             role_id=role_id)
     db.session.add(u)
     try:
         db.session.commit()
@@ -23,6 +24,7 @@ def _insert_user(email, username, password, confirmed=True, name="", location=""
 def users(count=100):
     _insert_user(email="thanh@gmail.com", username="thanh", password="123456", confirmed=True)
     _insert_user(email="bich@gmail.com", username="bich", password="123456", confirmed=True)
+    _insert_user(email="mod@gmail.com", username="mod", password="123456", confirmed=True, role_id=2)
     fake = Faker()
     i = 0
     while i < count:
