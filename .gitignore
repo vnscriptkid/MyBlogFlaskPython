@@ -41,6 +41,9 @@ app.db
 # Pycharm IDE
 .idea
 
-# Database file
+# Database files
 data-dev.sqlite
 data.sqlite
+
+# Temp files
+tmp
