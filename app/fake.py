@@ -4,8 +4,10 @@ from faker import Faker
 from . import db
 from .models import User, Post, Follow, Role, Comment
 
+user_role = Role.query.filter_by(name='User').first()
 
-def _insert_user(email, username, password, confirmed=True, name="", location="", about_me="", role_id=1):
+
+def _insert_user(email, username, password, confirmed=True, name="", location="", about_me="", role=user_role):
     u = User(email=email,
              username=username,
              password=password,
@@ -13,7 +15,7 @@ def _insert_user(email, username, password, confirmed=True, name="", location=""
              name=name,
              location=location,
              about_me=about_me,
-             role_id=role_id)
+             role=role)
     db.session.add(u)
     try:
         db.session.commit()
@@ -22,9 +24,12 @@ def _insert_user(email, username, password, confirmed=True, name="", location=""
 
 
 def users(count=100):
-    _insert_user(email="thanh@gmail.com", username="thanh", password="123456", confirmed=True)
-    _insert_user(email="bich@gmail.com", username="bich", password="123456", confirmed=True)
-    _insert_user(email="mod@gmail.com", username="mod", password="123456", confirmed=True, role_id=2)
+    mod_role = Role.query.filter_by(name='Moderator').first()
+    admin_role = Role.query.filter_by(name='Administrator').first()
+
+    _insert_user(email="admin@gmail.com", username="Admin", password="123456", confirmed=True, role=admin_role)
+    _insert_user(email="mod@gmail.com", username="Mod", password="123456", confirmed=True, role=mod_role)
+    _insert_user(email="user@gmail.com", username="Normal User", password="123456", confirmed=True)
     fake = Faker()
     i = 0
     while i < count:
