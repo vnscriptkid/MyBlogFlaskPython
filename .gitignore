@@ -47,3 +47,6 @@ data.sqlite
 
 # Temp files
 tmp
+
+# drivers
+chromedriver.exe

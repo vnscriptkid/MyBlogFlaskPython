@@ -52,4 +52,6 @@ def test(coverage, test_names):
         COV.erase()
 
 
+if __name__ == '__main__':
+    app.run()
 
