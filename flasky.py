@@ -4,7 +4,7 @@ import sys
 import click
 from flask_migrate import Migrate, upgrade
 
-from app import db, create_app
+from app import db, create_app, cli
 from app.models import User, Post, Role, Permission, Comment
 
 COV = None
@@ -15,6 +15,8 @@ if os.environ.get('FLASK_COVERAGE'):
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 migrate = Migrate(app, db)
+
+cli.register(app)
 
 
 @app.shell_context_processor

@@ -1,5 +1,7 @@
+from flask_babel import get_locale
+
 from app.auth import auth
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, g
 from flask_login import login_user, logout_user, login_required, current_user
 
 from .. import db
@@ -71,6 +73,7 @@ def confirm(token):
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
+        g.locale = str(get_locale())
         if not current_user.confirmed \
                 and request.endpoint \
                 and request.blueprint != 'auth' \

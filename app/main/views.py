@@ -2,6 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, current_ap
 
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
+from flask_babel import _
 
 from app import db
 from app.decorators import admin_required, permission_required
@@ -56,7 +57,7 @@ def edit_profile():
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash('Your profile has been updated.')
+        flash(_('Your profile has been updated.'))
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
@@ -159,7 +160,7 @@ def follow(username):
         return redirect(url_for('.user', username=username))
     current_user.follow(user)
     db.session.commit()
-    flash('You are now following %s.' % username)
+    flash(_('You are now following $(username)s.'), username=username)
     return redirect(url_for('.user', username=username))
 
 

@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, request, current_app
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_babel import Babel, lazy_gettext as _l
 
 from config import config
 
@@ -15,6 +16,7 @@ db = SQLAlchemy()
 pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+babel = Babel()
 
 
 def create_app(config_name):
@@ -32,6 +34,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
+    babel.init_app(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
@@ -44,6 +47,10 @@ def create_app(config_name):
 
     return app
 
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(current_app.config['LANGUAGES'])
 
 
 

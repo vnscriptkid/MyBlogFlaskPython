@@ -20,6 +20,7 @@ class Config(object):
     SQLALCHEMY_RECORD_QUERIES = True
     FLASKY_SLOW_DB_QUERY_TIME = 0.5
     SSL_REDIRECT = False
+    LANGUAGES = ['en', 'ja']
 
     @staticmethod
     def init_app(app):
