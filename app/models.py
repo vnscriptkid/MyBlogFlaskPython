@@ -123,6 +123,15 @@ class User(db.Model, UserMixin):
     def is_administrator(self):
         return self.can(Permission.ADMIN)
 
+    def is_moderator(self):
+        return self.can(Permission.MODERATE)
+
+    def is_user(self):
+        return self.role.default
+
+    def get_role_text(self):
+        return self.role.name
+
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id}).decode('utf-8')
