@@ -91,7 +91,7 @@ class SeleniumTestCase(unittest.TestCase):
         # navigate to login page
         self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, '//*[text()="Log In"]')))
         self.client.find_element_by_link_text('Log In').click()
-        self.assertIn('<h1>Login</h1>', self.client.page_source)
+        self.assertIn('<h1>Login Form</h1>', self.client.page_source)
 
         admin = User.query.filter_by(email='david@example.com').first()
         self.assertEqual(admin.username, 'david')
@@ -107,5 +107,5 @@ class SeleniumTestCase(unittest.TestCase):
         # navigate to the user's profile page
         self.client.find_element_by_link_text('Profile').click()
         time.sleep(1)
-        self.assertIn('<h1>david</h1>', self.client.page_source)
+        self.assertIn('<span>david</span>', self.client.page_source)
 
