@@ -1,23 +1,28 @@
-from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response
+from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response, jsonify
 
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from flask_babel import _
+from guess_language import guess_language
 
 from app import db
 from app.decorators import admin_required, permission_required
 from app.main import main
 from app.main.forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from app.models import Permission, User, Role, Post, Comment
+from app.translate import translate
 
 
-@main.route('/')
-@main.route('/index', methods=['GET', 'POST'])
+@main.route('/index')
+@main.route('/', methods=['GET', 'POST'])
 def index():
     form = PostForm()
 
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
-        post = Post(body=form.body.data, author=current_user._get_current_object())
+        language = guess_language(form.body.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        post = Post(body=form.body.data, author=current_user._get_current_object(), language=language)
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.index'))
@@ -262,6 +267,14 @@ def moderate_disable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/translate', methods=['POST'])
+@login_required
+def translate_text():
+    return jsonify({'text': translate(request.form['text'],
+                                      request.form['source_language'],
+                                      request.form['dest_language'])})
 
 
 @main.route('/shutdown')

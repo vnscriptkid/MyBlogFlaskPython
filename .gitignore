@@ -50,3 +50,6 @@ tmp
 
 # drivers
 chromedriver.exe
+
+# env vars file
+.env
