@@ -6,6 +6,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from .. import db
 from ..email import send_email
+from ..main.forms import SearchForm
 from ..models import User
 from .forms import LoginForm, RegistrationForm
 
@@ -74,6 +75,7 @@ def before_request():
     if current_user.is_authenticated:
         current_user.ping()
         g.locale = str(get_locale())
+        g.search_form = SearchForm()
         if not current_user.confirmed \
                 and request.endpoint \
                 and request.blueprint != 'auth' \

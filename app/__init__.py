@@ -1,3 +1,4 @@
+from elasticsearch import Elasticsearch
 from flask import Flask, request, current_app
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
@@ -35,6 +36,9 @@ def create_app(config_name):
     login_manager.init_app(app)
     pagedown.init_app(app)
     babel.init_app(app)
+
+    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
+        if app.config['ELASTICSEARCH_URL'] else None
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

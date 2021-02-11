@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response, jsonify
+from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response, jsonify, g
 
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
@@ -232,6 +232,23 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)  # 30 days
     return resp
+
+
+@main.route('/search')
+@login_required
+def search():
+    if not g.search_form.validate():
+        return redirect(url_for('main.index'))
+
+    page = request.args.get('page', 1, type=int)
+    posts, total = Post.search(g.search_form.q.data, page, current_app.config['FLASKY_POSTS_PER_PAGE'])
+
+    next_url = url_for('main.search', q=g.search_form.q.data, page=page + 1) \
+        if total > page * current_app.config['FLASKY_POSTS_PER_PAGE'] else None
+    prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
+        if page > 1 else None
+
+    return render_template('search.html', title=_('Search'), posts=posts, next_url=next_url, prev_url=prev_url)
 
 
 @main.route('/moderate')

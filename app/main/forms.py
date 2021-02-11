@@ -1,7 +1,9 @@
+from flask import request
 from flask_pagedown.fields import PageDownField
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, BooleanField, SelectField
 from wtforms.validators import Length, DataRequired, Email, Regexp, ValidationError
+from flask_babel import lazy_gettext as _l
 
 from app.models import Role, User
 
@@ -51,4 +53,14 @@ class CommentForm(FlaskForm):
     body = StringField('', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+
+class SearchForm(FlaskForm):
+    q = StringField(_l('Search'), validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata' not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enabled' not in kwargs:
+            kwargs['csrf_enabled'] = False
+        super(SearchForm, self).__init__(*args, **kwargs)
 

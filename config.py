@@ -25,6 +25,7 @@ class Config(object):
     SSL_REDIRECT = False
     LANGUAGES = ['en', 'ja']
     MS_TRANSLATOR_KEY = os.environ.get('MS_TRANSLATOR_KEY')
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
 
     @staticmethod
     def init_app(app):
