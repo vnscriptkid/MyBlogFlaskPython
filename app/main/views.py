@@ -326,3 +326,12 @@ def for_admins_only():
 @permission_required(Permission.MODERATE)
 def for_moderators_only():
     return "For comment moderators!"
+
+
+@main.route('/user/<username>/popup')
+@login_required
+def user_popup(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    print(user.to_json())
+    return render_template('user_popup.html', user=user)
+
